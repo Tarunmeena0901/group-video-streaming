@@ -13,7 +13,7 @@ function App() {
         muted
         autoPlay
       >
-        <source src="http://localhost:8080/video" type="video/mp4" />
+        <source src="http://localhost:3000/video" type="video/mp4" />
       </video>
     </div>
     </main>

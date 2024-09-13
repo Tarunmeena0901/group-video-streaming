@@ -33,4 +33,4 @@ app.get("/video", (req: Request, res: Response) => {
     videoStream.pipe(res);
 })
 
-app.listen(8080);
+app.listen(3000);
