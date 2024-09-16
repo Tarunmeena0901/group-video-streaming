@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useWebSocket } from "../providers/webSocketProvider";
+import { useUser } from "../providers/userProvider";
 
 export function GuestPage() {
     const videoElementRef = useRef<HTMLVideoElement>(null);
     const mediaSource = useRef(new MediaSource());
     const [hasStartedPlaying, setHasStartedPlaying] = useState(false); 
+    const {userName} = useUser();
 
     useEffect(() => {
         if (!videoElementRef.current) {
@@ -15,8 +18,12 @@ export function GuestPage() {
         // Initialize the mediaSource and set the video src
         mediaSource.current = new MediaSource();
         videoElement.src = URL.createObjectURL(mediaSource.current );
-        const ws = new WebSocket("ws://localhost:8080"); // Use the correct WebSocket protocol
-    
+
+        const ws = useWebSocket(); // Use the correct WebSocket protocol
+        if(!ws){
+            throw new Error("unable to connect to server");
+        }
+
         // Add error handling for MediaSource and SourceBuffer
         mediaSource.current.addEventListener("error", (e) => {
             console.error("MediaSource error:", e);
@@ -71,10 +78,17 @@ export function GuestPage() {
 
 
     return (
-        <div className="h-screen flex justify-center items-center">
+        <div className="h-screen flex justify-center items-center gap-6">
+            <span>
+                {userName}
+            </span>
+            <div>
             <div className="flex flex-col items-center gap-4 w-[90vh] h-[70vh] ">
                 <video ref={videoElementRef} autoPlay controls muted className="w-full h-full" />
-                
+            </div>
+            <div className="border-2 h-full">
+                chat
+            </div>
             </div>
         </div>
     )

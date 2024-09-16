@@ -1,4 +1,13 @@
 import { useState } from 'react';
+import { useWebSocket } from '../providers/webSocketProvider';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../providers/userProvider';
+
+type FormType = {
+    username: string,
+    roomId: string,
+    role: string
+}
 
 const JoinModal = ({ isOpen, onClose, modalType, role }: {
     modalType: string,
@@ -9,10 +18,19 @@ const JoinModal = ({ isOpen, onClose, modalType, role }: {
     const [username, setUsername] = useState('');
     const [roomId, setRoomId] = useState('');
     const [error, setError] = useState('');
-    const [formData, setFormData] = useState(null);
-
+    const [formData, setFormData] = useState<FormType | null>(null);
+    
+    const navigate = useNavigate();
+    const socket = useWebSocket();
+    const {setUserName: setGlobaUsername} = useUser()
+    if(!socket){
+        throw new Error("unable to connect to server");
+    }
+    
     const handleFormSubmit = (data: any) => {
         setFormData(data);
+        socket.send(JSON.stringify({type:"JOIN_OR_CREATE_ROOM",...formData}))
+        navigate("/guest")
         console.log('Form Data:', data);
     };
 
@@ -21,7 +39,8 @@ const JoinModal = ({ isOpen, onClose, modalType, role }: {
             setError('Both fields are required');
         } else {
             setError('');
-            handleFormSubmit({ username, roomId });
+            setGlobaUsername(username);
+            handleFormSubmit({ username, roomId, role });
             onClose(); // Close the popup after submitting
         }
     };
