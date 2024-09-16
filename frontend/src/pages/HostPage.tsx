@@ -3,7 +3,7 @@ import { useRef } from "react"
 export function HostPage() {
     const videoPlayerRef = useRef<HTMLVideoElement & { captureStream: () => MediaStream }>(null);
     const ws = useRef<WebSocket>();
-
+    const roomId = 1234
     const handleVideoLoad = (files: any) => {
 
         console.log("file uploading");
@@ -27,7 +27,7 @@ export function HostPage() {
 
             mediaRecorder.ondataavailable = (event: BlobEvent) => {
                 if(event.data.size > 0){
-                    ws.current?.send(event.data);
+                    ws.current?.send(JSON.stringify({type: "VIDEO_BUFFER" ,videoData: event.data, roomId: roomId}));
                 }
             }
 

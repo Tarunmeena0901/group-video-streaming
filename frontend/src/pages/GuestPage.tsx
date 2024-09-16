@@ -15,7 +15,6 @@ export function GuestPage() {
         // Initialize the mediaSource and set the video src
         mediaSource.current = new MediaSource();
         videoElement.src = URL.createObjectURL(mediaSource.current );
-        console.log(videoElement.src);
         const ws = new WebSocket("ws://localhost:8080"); // Use the correct WebSocket protocol
     
         // Add error handling for MediaSource and SourceBuffer
@@ -33,12 +32,12 @@ export function GuestPage() {
     
             ws.onmessage = async (event) => {
                 try {
-                    const buffer = await event.data.arrayBuffer();
+                    const parsedData = JSON.parse(event.data);
+                    const buffer = await parsedData.videoData.arrayBuffer();
                     console.log(mediaSource.current.sourceBuffers);
                     console.log("Received buffer:", buffer);
     
                     if (!sourceBuffer.updating) {
-                        console.log("appended")
                         sourceBuffer.appendBuffer(buffer);
                         if (!hasStartedPlaying) {
                             videoElement.play();
@@ -48,7 +47,7 @@ export function GuestPage() {
                     } else {
                         sourceBuffer.onupdateend = () => {
                             mediaSource.current.endOfStream();
-                            console.log("stream ended")
+                            alert("stream ended")
                         };
                     }
                 } catch (e) {
