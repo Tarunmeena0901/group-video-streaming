@@ -20,7 +20,7 @@ export function WebSocketProvider({ children }: {
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
     useEffect(() => {
-        const ws = new WebSocket("");
+        const ws = new WebSocket("ws://localhost:8080");
 
         setSocket(ws);
 

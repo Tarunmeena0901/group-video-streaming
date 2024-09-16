@@ -23,13 +23,11 @@ const JoinModal = ({ isOpen, onClose, modalType, role }: {
     const navigate = useNavigate();
     const socket = useWebSocket();
     const {setUserName: setGlobaUsername} = useUser()
-    if(!socket){
-        throw new Error("unable to connect to server");
-    }
+    
     
     const handleFormSubmit = (data: any) => {
         setFormData(data);
-        socket.send(JSON.stringify({type:"JOIN_OR_CREATE_ROOM",...formData}))
+        socket?.send(JSON.stringify({type:"JOIN_OR_CREATE_ROOM",...formData}))
         navigate("/guest")
         console.log('Form Data:', data);
     };
