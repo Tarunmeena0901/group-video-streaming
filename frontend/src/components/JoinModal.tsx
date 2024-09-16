@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../providers/userProvider';
 
 type FormType = {
-    username: string,
+    userName: string,
     roomId: string,
     role: string
 }
@@ -15,30 +15,30 @@ const JoinModal = ({ isOpen, onClose, modalType, role }: {
     role: string,
     onClose: () => void,
 }) => {
-    const [username, setUsername] = useState('');
+    const [userName, setUsername] = useState('');
     const [roomId, setRoomId] = useState('');
     const [error, setError] = useState('');
-    const [formData, setFormData] = useState<FormType | null>(null);
-    
+
     const navigate = useNavigate();
     const socket = useWebSocket();
-    const {setUserName: setGlobaUsername} = useUser()
-    
-    
-    const handleFormSubmit = (data: any) => {
-        setFormData(data);
-        socket?.send(JSON.stringify({type:"JOIN_OR_CREATE_ROOM",...formData}))
-        navigate("/guest")
-        console.log('Form Data:', data);
+    const { setUserName: setGlobaUsername, setRoomId: setGlobalRoomId } = useUser()
+
+    const handleFormSubmit = (updatedFormData: FormType) => {
+        const data = { type: "JOIN_OR_CREATE_ROOM", ...updatedFormData };
+        console.log(data);
+        socket?.send(JSON.stringify(data));
+        navigate("/guest");
     };
 
     const handleSubmit = () => {
-        if (username.trim() === '' || roomId.trim() === '') {
+        if (userName.trim() === '' || roomId.trim() === '') {
             setError('Both fields are required');
         } else {
             setError('');
-            setGlobaUsername(username);
-            handleFormSubmit({ username, roomId, role });
+            const updatedFormData = { userName, roomId, role };
+            setGlobaUsername(userName);
+            setGlobalRoomId(roomId);
+            handleFormSubmit(updatedFormData); // Pass the updated form data directly
             onClose(); // Close the popup after submitting
         }
     };
@@ -54,7 +54,7 @@ const JoinModal = ({ isOpen, onClose, modalType, role }: {
                     <label className="mb-2 text-gray-300">Username</label>
                     <input
                         type="text"
-                        value={username}
+                        value={userName}
                         onChange={(e) => setUsername(e.target.value)}
                         className="p-2 border border-gray-300 rounded text-black"
 

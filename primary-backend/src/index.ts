@@ -13,12 +13,20 @@ const connectedUsers: {
 
 wss.on('connection', function connection(userSocket: WebSocket) {
   userSocket.on('error', console.error);
+
+  userSocket.on('close', (data: string) => {
+    const parsedData = JSON.parse(data);
+
+    whenUserLeaves(parsedData);
+    console.log("user disconnected from the server")
+  });
+
   const userId = randomId();
   const roomId = randomId();
   userSocket.on('message', (data: string) => {
     console.log(data);
     const parsedData = JSON.parse(data);
-
+    console.log(parsedData);
     if (parsedData.type === "JOIN_OR_CREATE_ROOM") {
       connectedUsers[userId] = {
         ws: userSocket,
@@ -33,13 +41,14 @@ wss.on('connection', function connection(userSocket: WebSocket) {
       }))
     }
 
-    if(parsedData.type === "MESSAGE"){
+    if (parsedData.type === "MESSAGE") {
+
       const message = parsedData.message;
       const roomId = parsedData.roomId;
       const sender = parsedData.sender;
 
-      Object.values(connectedUsers).forEach((user)=> {
-        if(user.room === roomId){
+      Object.values(connectedUsers).forEach((user) => {
+        if (user.room === roomId) {
           user.ws.send(JSON.stringify({
             type: "MESSAGE",
             sender: sender,
@@ -61,22 +70,11 @@ wss.on('connection', function connection(userSocket: WebSocket) {
     }
 
     if (parsedData.type === "LEAVE_ROOM") {
-      const userName = parsedData.userName;
-      const user = Object.values(connectedUsers).find(user => user.userName === userName);
-
-      if (user) {
-        const roomId = user.room;
-        if (user.role === "host") {
-          Object.values(connectedUsers).forEach(connectedUser => {
-            if (connectedUser.room === roomId) {
-              connectedUser.room = "000";
-            }
-          });
-        } else {
-          user.room = "000";
-        }
-      }
+      whenUserLeaves(parsedData);
+      userSocket.send(JSON.stringify({type:"LEAVE_ROOM", message: "You left the room"}))
     }
+
+    console.log(connectedUsers);
   });
 
   const broadcast = (data: string) => {
@@ -91,4 +89,22 @@ wss.on('connection', function connection(userSocket: WebSocket) {
 
 function randomId() {
   return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+}
+
+function whenUserLeaves(parsedData: any) {
+  const userName = parsedData.userName;
+  const user = Object.values(connectedUsers).find(user => user.userName === userName);
+
+  if (user) {
+    const roomId = user.room;
+    if (user.role === "host") {
+      Object.values(connectedUsers).forEach(connectedUser => {
+        if (connectedUser.room === roomId) {
+          connectedUser.room = "000";
+        }
+      });
+    } else {
+      user.room = "000";
+    }
+  }
 }

@@ -20,7 +20,8 @@ export function WebSocketProvider({ children }: {
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8080");
+        try {
+            const ws = new WebSocket("ws://localhost:8080");
 
         setSocket(ws);
 
@@ -38,6 +39,10 @@ export function WebSocketProvider({ children }: {
 
         return () => {
             ws.close();
+        }
+
+        } catch (error) {
+            throw new Error("error connection to websocket server")
         }
     }, [])
 

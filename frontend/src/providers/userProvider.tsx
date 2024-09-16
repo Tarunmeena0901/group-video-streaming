@@ -2,7 +2,9 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface UserContextProps {
   userName: string | null;
-  setUserName: (username: string) => void;
+  roomId: string | null;
+  setRoomId: (roomId: string) => void;
+  setUserName: (userName: string) => void;
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
@@ -19,9 +21,10 @@ export const UserContextProvider = ({children}: {
     children: ReactNode
 })=> {
     const [userName, setUserName] = useState<string | null>(null);
+    const [roomId, setRoomId] = useState<string | null>(null);
 
     return (
-        <UserContext.Provider value={{userName,setUserName}}>
+        <UserContext.Provider value={{userName,roomId,setRoomId,setUserName}}>
             {children}
         </UserContext.Provider>
     )
