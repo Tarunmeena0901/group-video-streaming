@@ -32,7 +32,6 @@ export function ChatBox({ userName, roomId, ws }: {
         }
         ws.onmessage = (event: MessageEvent) => {
             const parsedData = JSON.parse(event.data);
-            console.log(parsedData);
             if (parsedData.type == "MESSAGE") {
                 const message = {
                     sender: parsedData.sender,

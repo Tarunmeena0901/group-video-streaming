@@ -8,7 +8,6 @@ import { UserContextProvider } from "./providers/userProvider";
 
 
 function App() {
-  console.log("homepage")
   return (
     <div className="bg-black px-[20vh]">
       

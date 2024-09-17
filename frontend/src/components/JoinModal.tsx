@@ -30,7 +30,7 @@ const JoinModal = ({ isOpen, onClose, modalType, role }: {
     
         const handleSocketMessage = (event: MessageEvent) => {
             const parsedData = JSON.parse(event.data);
-            console.log("parse", parsedData)
+    
             if (parsedData.type == "JOIN_OR_CREATE_ROOM") {
                 setGlobaUsername(parsedData.userName);
                 setGlobalRoomId(parsedData.roomId);

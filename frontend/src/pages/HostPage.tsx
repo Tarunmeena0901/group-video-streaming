@@ -30,7 +30,7 @@ export function HostPage() {
             videoElement.src = URL.createObjectURL(videoFile);
 
             videoElement.onloadeddata = () => {
-                console.log("1111");
+
                 const stream = videoElement.captureStream();
                 streamRef.current = stream;
 
@@ -42,7 +42,7 @@ export function HostPage() {
                 mediaRecorderRef.current = mediaRecorder;
 
                 mediaRecorder.ondataavailable = (event: BlobEvent) => {
-                    console.log(event.data);
+ 
                     if (event.data.size > 0) {
                         // Convert Blob to Base64
                         const reader = new FileReader();

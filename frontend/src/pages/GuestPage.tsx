@@ -20,7 +20,7 @@ export function GuestPage() {
         if (!videoElementRef.current) {
             throw new Error("video element not found");
         }
-        console.log("1111");
+
         const videoElement = videoElementRef.current;
 
         mediaSource.current = new MediaSource();
@@ -31,19 +31,19 @@ export function GuestPage() {
         });
 
         mediaSource.current.addEventListener("sourceopen", () => {
-            console.log("11222");
+   
             const sourceBuffer = mediaSource.current.addSourceBuffer(`video/mp4; codecs="avc1.42E01E,mp4a.40.2"`);
 
             sourceBuffer.addEventListener('error', (e) => {
                 console.error("SourceBuffer error:", e);
             });
-            console.log(ws.readyState);
+ 
             ws.onmessage = async (event) => {
-                console.log("112333");
+              
                 const parsedData = JSON.parse(event.data);
-                console.log()
+      
                 if (parsedData.type == "VIDEO_BUFFER") {
-                    console.log("1124444");
+         
                     try {
                         const base64Data = parsedData.videoData;
                         const binaryData = atob(base64Data);

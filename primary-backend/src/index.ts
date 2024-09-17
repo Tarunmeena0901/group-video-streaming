@@ -40,7 +40,7 @@ wss.on('connection', function connection(userSocket: WebSocket) {
         roomId: connectedUsers[userId].room,
         userName: connectedUsers[userId].userName
       }))
-      console.log("sent")
+
     }
 
     if (parsedData.type === "MESSAGE") {
@@ -66,7 +66,6 @@ wss.on('connection', function connection(userSocket: WebSocket) {
       const userName = parsedData.userName;
       Object.values(connectedUsers).forEach((user) => {
         if (user.room === roomId) {
-          console.log("reached here")
           user.ws.send(JSON.stringify({ type: "VIDEO_BUFFER", videoData: base64Data }))
         }
       })
