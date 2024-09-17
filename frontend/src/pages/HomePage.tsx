@@ -47,12 +47,12 @@ export function HomePage() {
                     src="./hero_img.svg"
                 />
             </div>
-            <JoinModal
+            {isPopupOpen && <JoinModal
                 role={role}
                 modalType={modalType}
                 isOpen={isPopupOpen}
                 onClose={() => setIsModalOpen(false)}
-            />
+            />}
         </div>
     )
 }

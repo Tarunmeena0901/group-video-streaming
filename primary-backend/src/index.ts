@@ -12,11 +12,11 @@ const connectedUsers: {
 } = {};
 
 wss.on('connection', function connection(userSocket: WebSocket) {
+  console.log("user connected");
   userSocket.on('error', console.error);
 
   userSocket.on('close', (data: string) => {
     const parsedData = JSON.parse(data);
-
     whenUserLeaves(parsedData);
     console.log("user disconnected from the server")
   });
@@ -24,10 +24,10 @@ wss.on('connection', function connection(userSocket: WebSocket) {
   const userId = randomId();
   const roomId = randomId();
   userSocket.on('message', (data: string) => {
-    console.log(data);
     const parsedData = JSON.parse(data);
     console.log(parsedData);
     if (parsedData.type === "JOIN_OR_CREATE_ROOM") {
+      console.log(parsedData);
       connectedUsers[userId] = {
         ws: userSocket,
         userName: parsedData.userName,
@@ -37,8 +37,10 @@ wss.on('connection', function connection(userSocket: WebSocket) {
       userSocket.send(JSON.stringify({
         type: "JOIN_OR_CREATE_ROOM",
         message: `You joined ${parsedData.roomId}`,
-        roomId: connectedUsers[userId].room
+        roomId: connectedUsers[userId].room,
+        userName: connectedUsers[userId].userName
       }))
+      console.log("sent")
     }
 
     if (parsedData.type === "MESSAGE") {
@@ -57,21 +59,22 @@ wss.on('connection', function connection(userSocket: WebSocket) {
         }
       })
     }
-
+    
     if (parsedData.type === "VIDEO_BUFFER") {
-      const videoBuffer = parsedData.videoData;
+      const base64Data = parsedData.videoData.split(',')[2]; // Remove data URL prefix
       const roomId = parsedData.roomId;
-
-      Object.keys(connectedUsers).forEach((connectedUserId) => {
-        if (connectedUsers[connectedUserId].room == roomId && connectedUsers[connectedUserId].ws != userSocket) {
-          connectedUsers[connectedUserId].ws.send(JSON.stringify({ type: "VIDEO_BUFFER", videoData: videoBuffer }));
+      const userName = parsedData.userName;
+      Object.values(connectedUsers).forEach((user) => {
+        if (user.room === roomId) {
+          console.log("reached here")
+          user.ws.send(JSON.stringify({ type: "VIDEO_BUFFER", videoData: base64Data }))
         }
       })
     }
 
     if (parsedData.type === "LEAVE_ROOM") {
       whenUserLeaves(parsedData);
-      userSocket.send(JSON.stringify({type:"LEAVE_ROOM", message: "You left the room"}))
+      userSocket.send(JSON.stringify({ type: "LEAVE_ROOM", message: "You left the room" }))
     }
 
     console.log(connectedUsers);

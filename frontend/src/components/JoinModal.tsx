@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWebSocket } from '../providers/webSocketProvider';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../providers/userProvider';
@@ -21,25 +21,46 @@ const JoinModal = ({ isOpen, onClose, modalType, role }: {
 
     const navigate = useNavigate();
     const socket = useWebSocket();
-    const { setUserName: setGlobaUsername, setRoomId: setGlobalRoomId } = useUser()
+    const {setRoomId: setGlobalRoomId, setUserName: setGlobaUsername} = useUser();
+
+    useEffect(() => {
+        if (!socket) {
+            throw new Error("Not connected to WebSocket server");
+        }
+    
+        const handleSocketMessage = (event: MessageEvent) => {
+            const parsedData = JSON.parse(event.data);
+            console.log("parse", parsedData)
+            if (parsedData.type == "JOIN_OR_CREATE_ROOM") {
+                setGlobaUsername(parsedData.userName);
+                setGlobalRoomId(parsedData.roomId);
+                onClose();
+                navigate(`/${role}`);
+            }
+        };
+    
+        socket.onmessage = handleSocketMessage;
+    
+        return () => {
+            socket.onmessage = null; // Clean up when component unmounts
+        };
+    }, [socket, setGlobaUsername, setGlobalRoomId]);
 
     const handleFormSubmit = (updatedFormData: FormType) => {
         const data = { type: "JOIN_OR_CREATE_ROOM", ...updatedFormData };
-        console.log(data);
         socket?.send(JSON.stringify(data));
-        navigate("/guest");
     };
 
     const handleSubmit = () => {
-        if (userName.trim() === '' || roomId.trim() === '') {
+        if (role == "guest" && (userName.trim() === '' || roomId.trim() === '')) {
             setError('Both fields are required');
-        } else {
+        } else if(role == "host" && (userName.trim() === '')){
+            setError('username field is required');
+        } 
+        else {
             setError('');
             const updatedFormData = { userName, roomId, role };
-            setGlobaUsername(userName);
-            setGlobalRoomId(roomId);
             handleFormSubmit(updatedFormData); // Pass the updated form data directly
-            onClose(); // Close the popup after submitting
         }
     };
 
