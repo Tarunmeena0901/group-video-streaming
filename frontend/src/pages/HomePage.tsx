@@ -11,10 +11,10 @@ export function HomePage() {
         <div className="h-screen flex pt-[20vh] ">
             <div className="h-[70vh] w-1/2  flex flex-col gap-6 py-[10vh] ">
                 <div className="text-5xl font-bold text-white">
-                    Watch movies with you friends from anywhere
+                    Watch Mp4 with you friends from anywhere
                 </div>
                 <div className="text-xl font-base text-white">
-                    Just share the roomId, connect with you friends and watch movies while chatting with each other
+                    Just share the roomId, connect with your friends and watch movies while chatting with each other
                 </div>
                 <div className="w-full flex gap-6 text-white ">
                     <button

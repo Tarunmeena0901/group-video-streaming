@@ -42,7 +42,7 @@ export function HostPage() {
                 mediaRecorderRef.current = mediaRecorder;
 
                 mediaRecorder.ondataavailable = (event: BlobEvent) => {
- 
+
                     if (event.data.size > 0) {
                         // Convert Blob to Base64
                         const reader = new FileReader();
@@ -61,7 +61,7 @@ export function HostPage() {
                 };
 
                 videoElement.play();
-                mediaRecorder.start(1000); // Send video data every second
+                mediaRecorder.start(2000); // Send video data every second
                 setIsStreaming(true);
             };
         } else {
@@ -93,14 +93,21 @@ export function HostPage() {
                 <div className="w-4/5 h-[80vh] ">
                     <video ref={videoPlayerRef} controls className="w-full h-full rounded-lg" />
                 </div>
-                <ChatBox ws={ws} userName={userName} roomId={roomId} />
+                <ChatBox userName={userName} roomId={roomId} />
             </div>
-            <div className="w-4/5 flex justify-between px-5 gap-4">
+            <div className="w-4/5 flex justify-around px-5 gap-4">
                 <input
                     type="file"
                     accept="video/*"
                     className="w-[35vh] h-full rounded-lg py-2 px-3 text-white flex justify-center items-center cursor-pointer"
                     onChange={(e) => handleVideoLoad(e.target.files)} />
+                <div>
+                    <span
+                        className="w-[35vh] group h-full rounded-lg p-2 gap-2 text-white flex items-center justify-center border-2 border-neutral-700"
+                    >
+                        roomId: <span className="font-thin text-sm text-neutral-400 group-hover:text-white">{roomId}</span>
+                    </span>
+                </div>
                 <button
                     className="w-[25vh] group h-full rounded-lg py-2 px-3 text-white flex justify-center items-center border-2 border-neutral-700 hover:border-white"
                     onClick={isStreaming ? () => stopStreaming() : () => startStreaming()}

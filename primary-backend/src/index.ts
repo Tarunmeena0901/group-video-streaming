@@ -18,6 +18,7 @@ wss.on('connection', function connection(userSocket: WebSocket) {
   userSocket.on('close', (data: string) => {
     const parsedData = JSON.parse(data);
     whenUserLeaves(parsedData);
+    delete connectedUsers[userId];
     console.log("user disconnected from the server")
   });
 
@@ -66,6 +67,7 @@ wss.on('connection', function connection(userSocket: WebSocket) {
       const userName = parsedData.userName;
       Object.values(connectedUsers).forEach((user) => {
         if (user.room === roomId) {
+          console.log("sent");
           user.ws.send(JSON.stringify({ type: "VIDEO_BUFFER", videoData: base64Data }))
         }
       })
