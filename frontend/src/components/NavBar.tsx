@@ -13,7 +13,7 @@ export function NavBar() {
         <div className="z-20 absolute sticky top-5 h-[4vh] flex items-center justify-center bg-transparent w-full">
             <div className="relative text-white flex justify-between sm:justify-center items-center rounded-lg w-[65vh] sm:w-[110vh] h-[6vh] backdrop-blur bg-neutral-900/30 border-2 border-neutral-800 ">
                 <div className=" text-xl font-extrabold gap-1 cursor-pointer rounded flex justify-center items-center"> 
-                    StreamMp4
+                    StreamP4
                 </div>
                 <div className="sm:flex justify-center items-center hidden">
                 <Tabs setPosition={setPostion}>Products</Tabs>
